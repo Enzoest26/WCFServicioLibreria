@@ -90,6 +90,10 @@ namespace WCFServicioLibreria
 
         public User SP_VALIDARACCESO(string email, string password)
         {
+            if(email == null || password == null)
+            {
+                return null;
+            }
             conectar();
             SqlCommand cmd = new SqlCommand("SP_VALIDARACCESO", cn);
             cmd.CommandType = CommandType.StoredProcedure;
