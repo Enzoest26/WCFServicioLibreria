@@ -1,0 +1,7 @@
+E:\repos\Bootcamp\Reto1\WCFServicioLibreria\bin\WCFServicioLibreria.dll.config
+E:\repos\Bootcamp\Reto1\WCFServicioLibreria\bin\WCFServicioLibreria.dll
+E:\repos\Bootcamp\Reto1\WCFServicioLibreria\bin\WCFServicioLibreria.pdb
+E:\repos\Bootcamp\Reto1\WCFServicioLibreria\obj\Debug\WCFServicioLibreria.csproj.AssemblyReference.cache
+E:\repos\Bootcamp\Reto1\WCFServicioLibreria\obj\Debug\WCFServicioLibreria.csproj.CoreCompileInputs.cache
+E:\repos\Bootcamp\Reto1\WCFServicioLibreria\obj\Debug\WCFServicioLibreria.dll
+E:\repos\Bootcamp\Reto1\WCFServicioLibreria\obj\Debug\WCFServicioLibreria.pdb
