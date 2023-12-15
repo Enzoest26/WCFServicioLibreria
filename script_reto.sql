@@ -1,83 +1,83 @@
 USE [master]
 GO
-IF EXISTS (SELECT * FROM sys.databases WHERE name = 'dbReto2')
+IF EXISTS (SELECT * FROM sys.databases WHERE name = 'dbReto1')
 BEGIN
-	DROP DATABASE [dbReto2]
+	DROP DATABASE [dbReto1]
 END
 GO
-/****** Object:  Database [dbReto2]    Script Date: 14/12/2023 17:35:06 ******/
-CREATE DATABASE [dbReto2]
+/****** Object:  Database [dbReto1]    Script Date: 14/12/2023 17:35:06 ******/
+CREATE DATABASE [dbReto1]
 GO
-ALTER DATABASE [dbReto2] SET COMPATIBILITY_LEVEL = 140
+ALTER DATABASE [dbReto1] SET COMPATIBILITY_LEVEL = 140
 GO
 IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
 begin
-EXEC [dbReto2].[dbo].[sp_fulltext_database] @action = 'enable'
+EXEC [dbReto1].[dbo].[sp_fulltext_database] @action = 'enable'
 end
 GO
-ALTER DATABASE [dbReto2] SET ANSI_NULL_DEFAULT OFF 
+ALTER DATABASE [dbReto1] SET ANSI_NULL_DEFAULT OFF 
 GO
-ALTER DATABASE [dbReto2] SET ANSI_NULLS OFF 
+ALTER DATABASE [dbReto1] SET ANSI_NULLS OFF 
 GO
-ALTER DATABASE [dbReto2] SET ANSI_PADDING OFF 
+ALTER DATABASE [dbReto1] SET ANSI_PADDING OFF 
 GO
-ALTER DATABASE [dbReto2] SET ANSI_WARNINGS OFF 
+ALTER DATABASE [dbReto1] SET ANSI_WARNINGS OFF 
 GO
-ALTER DATABASE [dbReto2] SET ARITHABORT OFF 
+ALTER DATABASE [dbReto1] SET ARITHABORT OFF 
 GO
-ALTER DATABASE [dbReto2] SET AUTO_CLOSE OFF 
+ALTER DATABASE [dbReto1] SET AUTO_CLOSE OFF 
 GO
-ALTER DATABASE [dbReto2] SET AUTO_SHRINK OFF 
+ALTER DATABASE [dbReto1] SET AUTO_SHRINK OFF 
 GO
-ALTER DATABASE [dbReto2] SET AUTO_UPDATE_STATISTICS ON 
+ALTER DATABASE [dbReto1] SET AUTO_UPDATE_STATISTICS ON 
 GO
-ALTER DATABASE [dbReto2] SET CURSOR_CLOSE_ON_COMMIT OFF 
+ALTER DATABASE [dbReto1] SET CURSOR_CLOSE_ON_COMMIT OFF 
 GO
-ALTER DATABASE [dbReto2] SET CURSOR_DEFAULT  GLOBAL 
+ALTER DATABASE [dbReto1] SET CURSOR_DEFAULT  GLOBAL 
 GO
-ALTER DATABASE [dbReto2] SET CONCAT_NULL_YIELDS_NULL OFF 
+ALTER DATABASE [dbReto1] SET CONCAT_NULL_YIELDS_NULL OFF 
 GO
-ALTER DATABASE [dbReto2] SET NUMERIC_ROUNDABORT OFF 
+ALTER DATABASE [dbReto1] SET NUMERIC_ROUNDABORT OFF 
 GO
-ALTER DATABASE [dbReto2] SET QUOTED_IDENTIFIER OFF 
+ALTER DATABASE [dbReto1] SET QUOTED_IDENTIFIER OFF 
 GO
-ALTER DATABASE [dbReto2] SET RECURSIVE_TRIGGERS OFF 
+ALTER DATABASE [dbReto1] SET RECURSIVE_TRIGGERS OFF 
 GO
-ALTER DATABASE [dbReto2] SET  ENABLE_BROKER 
+ALTER DATABASE [dbReto1] SET  ENABLE_BROKER 
 GO
-ALTER DATABASE [dbReto2] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+ALTER DATABASE [dbReto1] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
 GO
-ALTER DATABASE [dbReto2] SET DATE_CORRELATION_OPTIMIZATION OFF 
+ALTER DATABASE [dbReto1] SET DATE_CORRELATION_OPTIMIZATION OFF 
 GO
-ALTER DATABASE [dbReto2] SET TRUSTWORTHY OFF 
+ALTER DATABASE [dbReto1] SET TRUSTWORTHY OFF 
 GO
-ALTER DATABASE [dbReto2] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+ALTER DATABASE [dbReto1] SET ALLOW_SNAPSHOT_ISOLATION OFF 
 GO
-ALTER DATABASE [dbReto2] SET PARAMETERIZATION SIMPLE 
+ALTER DATABASE [dbReto1] SET PARAMETERIZATION SIMPLE 
 GO
-ALTER DATABASE [dbReto2] SET READ_COMMITTED_SNAPSHOT OFF 
+ALTER DATABASE [dbReto1] SET READ_COMMITTED_SNAPSHOT OFF 
 GO
-ALTER DATABASE [dbReto2] SET HONOR_BROKER_PRIORITY OFF 
+ALTER DATABASE [dbReto1] SET HONOR_BROKER_PRIORITY OFF 
 GO
-ALTER DATABASE [dbReto2] SET RECOVERY FULL 
+ALTER DATABASE [dbReto1] SET RECOVERY FULL 
 GO
-ALTER DATABASE [dbReto2] SET  MULTI_USER 
+ALTER DATABASE [dbReto1] SET  MULTI_USER 
 GO
-ALTER DATABASE [dbReto2] SET PAGE_VERIFY CHECKSUM  
+ALTER DATABASE [dbReto1] SET PAGE_VERIFY CHECKSUM  
 GO
-ALTER DATABASE [dbReto2] SET DB_CHAINING OFF 
+ALTER DATABASE [dbReto1] SET DB_CHAINING OFF 
 GO
-ALTER DATABASE [dbReto2] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+ALTER DATABASE [dbReto1] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
 GO
-ALTER DATABASE [dbReto2] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+ALTER DATABASE [dbReto1] SET TARGET_RECOVERY_TIME = 60 SECONDS 
 GO
-ALTER DATABASE [dbReto2] SET DELAYED_DURABILITY = DISABLED 
+ALTER DATABASE [dbReto1] SET DELAYED_DURABILITY = DISABLED 
 GO
-EXEC sys.sp_db_vardecimal_storage_format N'dbReto2', N'ON'
+EXEC sys.sp_db_vardecimal_storage_format N'dbReto1', N'ON'
 GO
-ALTER DATABASE [dbReto2] SET QUERY_STORE = OFF
+ALTER DATABASE [dbReto1] SET QUERY_STORE = OFF
 GO
-USE [dbReto2]
+USE [dbReto1]
 GO
 /****** Object:  Table [dbo].[books]    Script Date: 14/12/2023 17:35:06 ******/
 SET ANSI_NULLS ON
@@ -228,7 +228,7 @@ END
 GO
 USE [master]
 GO
-ALTER DATABASE [dbReto2] SET  READ_WRITE 
+ALTER DATABASE [dbReto1] SET  READ_WRITE 
 GO
 
 SET DATEFORMAT ymd
@@ -237,25 +237,25 @@ SET NUMERIC_ROUNDABORT, IMPLICIT_TRANSACTIONS, XACT_ABORT OFF
 GO
 
 
-INSERT dbReto2.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ( 'Principito', 'ISBN124124', 1, '2023-12-13 19:42:05.850', NULL, CONVERT(bit, 'True'), CONVERT(bit, 'True'))
-INSERT dbReto2.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Harry Potter', 'ISBN6251244', 1, '2023-12-13 19:42:23.620', NULL, CONVERT(bit, 'True'), CONVERT(bit, 'True'))
-INSERT dbReto2.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Javita desde la casa', 'ISBN6184233', 1, '2023-12-13 19:42:34.740', NULL, CONVERT(bit, 'True'), CONVERT(bit, 'True'))
-INSERT dbReto2.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Libro de Dios', '48465132', 1, '2023-12-14 15:38:27.970', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
-INSERT dbReto2.dbo.books( varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ( 'Historia del Perú', 'ISBN4687231', 1, '2023-12-14 15:40:52.963', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
-INSERT dbReto2.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ( 'Historia del Amaeríca Latina', 'ISBN4687231', 1, '2023-12-14 15:50:13.573', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
-INSERT dbReto2.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Historia del Espacio', 'ISBN4684652', 1, '2023-12-14 15:50:26.910', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ( 'Principito', 'ISBN124124', 1, '2023-12-13 19:42:05.850', NULL, CONVERT(bit, 'True'), CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Harry Potter', 'ISBN6251244', 1, '2023-12-13 19:42:23.620', NULL, CONVERT(bit, 'True'), CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Javita desde la casa', 'ISBN6184233', 1, '2023-12-13 19:42:34.740', NULL, CONVERT(bit, 'True'), CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Libro de Dios', '48465132', 1, '2023-12-14 15:38:27.970', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.books( varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ( 'Historia del Perú', 'ISBN4687231', 1, '2023-12-14 15:40:52.963', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ( 'Historia del Amaeríca Latina', 'ISBN4687231', 1, '2023-12-14 15:50:13.573', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Historia del Espacio', 'ISBN4684652', 1, '2023-12-14 15:50:26.910', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
 GO
 
-INSERT dbReto2.dbo.users( varFirstName, varLastName, varEmail, varPassword, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 'Enzo', 'Esteban', 'enzoest26@gmail.com', 'enzitoTuRey', 1, '2023-12-13 11:07:47.240', NULL, CONVERT(bit, 'True'))
-INSERT dbReto2.dbo.users( varFirstName, varLastName, varEmail, varPassword, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 'Juan', 'Pedro', 'pedrito15@gmail.com', 'predrito12', 1, '2023-12-13 11:08:08.407', NULL, CONVERT(bit, 'False'))
+INSERT dbReto1.dbo.users( varFirstName, varLastName, varEmail, varPassword, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 'Enzo', 'Esteban', 'enzoest26@gmail.com', 'enzitoTuRey', 1, '2023-12-13 11:07:47.240', NULL, CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.users( varFirstName, varLastName, varEmail, varPassword, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 'Juan', 'Pedro', 'pedrito15@gmail.com', 'predrito12', 1, '2023-12-13 11:08:08.407', NULL, CONVERT(bit, 'False'))
 GO
 
-INSERT dbReto2.dbo.reservations( idUser, idBook, dmeDateReservation, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 1, 3, '2023-12-13 19:42:50.343', 1, '2023-12-13 19:42:50.343', NULL, CONVERT(bit, 'True'))
-INSERT dbReto2.dbo.reservations( idUser, idBook, dmeDateReservation, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 1, 1, '2023-12-13 20:04:33.237', 1, '2023-12-13 20:04:33.240', NULL, CONVERT(bit, 'True'))
-INSERT dbReto2.dbo.reservations( idUser, idBook, dmeDateReservation, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 1, 5, '2023-12-14 15:48:44.903', 1, '2023-12-14 15:48:44.903', NULL, CONVERT(bit, 'True'))
-INSERT dbReto2.dbo.reservations( idUser, idBook, dmeDateReservation, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 1, 4, '2023-12-14 15:49:10.180', 1, '2023-12-14 15:49:10.180', NULL, CONVERT(bit, 'True'))
-INSERT dbReto2.dbo.reservations( idUser, idBook, dmeDateReservation, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 1, 7, '2023-12-14 15:50:52.173', 1, '2023-12-14 15:50:52.173', NULL, CONVERT(bit, 'True'))
-INSERT dbReto2.dbo.reservations( idUser, idBook, dmeDateReservation, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 1, 2, '2023-12-14 15:52:11.003', 1, '2023-12-14 15:52:11.003', NULL, CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.reservations( idUser, idBook, dmeDateReservation, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 1, 3, '2023-12-13 19:42:50.343', 1, '2023-12-13 19:42:50.343', NULL, CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.reservations( idUser, idBook, dmeDateReservation, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 1, 1, '2023-12-13 20:04:33.237', 1, '2023-12-13 20:04:33.240', NULL, CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.reservations( idUser, idBook, dmeDateReservation, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 1, 5, '2023-12-14 15:48:44.903', 1, '2023-12-14 15:48:44.903', NULL, CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.reservations( idUser, idBook, dmeDateReservation, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 1, 4, '2023-12-14 15:49:10.180', 1, '2023-12-14 15:49:10.180', NULL, CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.reservations( idUser, idBook, dmeDateReservation, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 1, 7, '2023-12-14 15:50:52.173', 1, '2023-12-14 15:50:52.173', NULL, CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.reservations( idUser, idBook, dmeDateReservation, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 1, 2, '2023-12-14 15:52:11.003', 1, '2023-12-14 15:52:11.003', NULL, CONVERT(bit, 'True'))
 GO
 
 
