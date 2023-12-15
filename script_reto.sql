@@ -87,7 +87,7 @@ GO
 CREATE TABLE [dbo].[books](
 	[idBook] [int] IDENTITY(1,1) NOT NULL,
 	[varTitle] [varchar](100) NOT NULL,
-	[varCode] [varchar](50) NOT NULL,
+	[varCode] [varchar](50) NOT NULL UNIQUE,
 	[intStatus] [int] NULL,
 	[dmeDateCreate] [datetime] NOT NULL,
 	[dmeDateUpdate] [datetime] NULL,
@@ -178,11 +178,11 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE   PROC [dbo].[SP_LISTARVISTALIBROS]
+CREATE PROC [dbo].[SP_LISTARVISTALIBROS](@CODE VARCHAR(50))
 AS
 BEGIN
 	SELECT
-		b.idBook, b.varTitle, 
+		b.varCode, b.varTitle, 
 		CASE
 			WHEN r.idBook IS NULL 
 			THEN 'NO RESERVADO'
@@ -191,7 +191,8 @@ BEGIN
 		r.dmeDateReservation
 	FROM dbo.books AS b 
 	LEFT JOIN dbo.reservations AS r
-	ON (b.idBook = r.idBook);
+	ON (b.idBook = r.idBook)
+	WHERE (@CODE IS NULL OR @CODE = '' OR b.varCode  LIKE '%' + @CODE + '%');
 END
 GO
 /****** Object:  StoredProcedure [dbo].[SP_RESERVARLIBRO]    Script Date: 14/12/2023 17:35:06 ******/
@@ -221,13 +222,25 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create   proc [dbo].[SP_VALIDARRESERVA](@ID_BOOK INT) AS
+create   proc [dbo].[SP_VALIDARRESERVA](@CODE_BOOK varchar(50)) AS
 BEGIN
-	SELECT COUNT(1) FROM dbo.reservations WHERE dmeDateReservation IS NOT NULL AND idBook = @ID_BOOK
+	SELECT COUNT(1) FROM dbo.reservations AS r INNER JOIN dbo.books AS b ON r.idBook = b.idBook WHERE b.varCode = @CODE_BOOK;
 END
 GO
+/****** Object:  StoredProcedure [dbo].[SP_VALIDARRESERVA]    Script Date: 14/12/2023 17:35:06 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create   proc [dbo].[SP_BUSCARLIBROXCODE](@CODE_BOOK varchar(50)) AS
+BEGIN
+	SELECT * FROM dbo.books WHERE varCode = @CODE_BOOK;
+END
+GO
+
 USE [master]
 GO
+
 ALTER DATABASE [dbReto1] SET  READ_WRITE 
 GO
 
@@ -237,13 +250,16 @@ SET NUMERIC_ROUNDABORT, IMPLICIT_TRANSACTIONS, XACT_ABORT OFF
 GO
 
 
-INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ( 'Principito', 'ISBN124124', 1, '2023-12-13 19:42:05.850', NULL, CONVERT(bit, 'True'), CONVERT(bit, 'True'))
-INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Harry Potter', 'ISBN6251244', 1, '2023-12-13 19:42:23.620', NULL, CONVERT(bit, 'True'), CONVERT(bit, 'True'))
-INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Javita desde la casa', 'ISBN6184233', 1, '2023-12-13 19:42:34.740', NULL, CONVERT(bit, 'True'), CONVERT(bit, 'True'))
-INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Libro de Dios', '48465132', 1, '2023-12-14 15:38:27.970', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
-INSERT dbReto1.dbo.books( varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ( 'Historia del Perú', 'ISBN4687231', 1, '2023-12-14 15:40:52.963', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
-INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ( 'Historia del Amaeríca Latina', 'ISBN4687231', 1, '2023-12-14 15:50:13.573', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
-INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Historia del Espacio', 'ISBN4684652', 1, '2023-12-14 15:50:26.910', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ( 'Principito', 'LB0001', 1, '2023-12-13 19:42:05.850', NULL, CONVERT(bit, 'True'), CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Harry Potter', 'LB0022', 1, '2023-12-13 19:42:23.620', NULL, CONVERT(bit, 'True'), CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Javita desde la casa', 'LB0012', 1, '2023-12-13 19:42:34.740', NULL, CONVERT(bit, 'True'), CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Libro de Dios', 'LB0082', 1, '2023-12-14 15:38:27.970', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.books( varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ( 'Historia del Perú', 'LB0030', 1, '2023-12-14 15:40:52.963', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ( 'Historia del Amaeríca Latina', 'LB0015', 1, '2023-12-14 15:50:13.573', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Historia del Espacio', 'LB0077', 1, '2023-12-14 15:50:26.910', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Historia del Espacio 2', 'LB0007', 1, '2023-12-14 15:50:26.910', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.books(varTitle, varCode, intStatus, dmeDateCreate, dmeDateUpdate, bolIsReservated, bolIsActive) VALUES ('Historia del Espacio 3', 'LB0008', 1, '2023-12-14 15:50:26.910', NULL, CONVERT(bit, 'False'), CONVERT(bit, 'True'))
+
 GO
 
 INSERT dbReto1.dbo.users( varFirstName, varLastName, varEmail, varPassword, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 'Enzo', 'Esteban', 'enzoest26@gmail.com', 'enzitoTuRey', 1, '2023-12-13 11:07:47.240', NULL, CONVERT(bit, 'True'))

@@ -32,23 +32,23 @@ namespace WCFServicioLibreria
             }
         }
 
-        public List<DtoLibro> SP_LISTARVISTALIBROS()
+        public List<DtoLibro> SP_LISTARVISTALIBROS(string code)
         {
             conectar();
             SqlCommand cmd = new SqlCommand("SP_LISTARVISTALIBROS", cn);
             cmd.CommandType = CommandType.StoredProcedure;
-
+            cmd.Parameters.Add("@CODE", SqlDbType.VarChar).Value = code == null ? "" : code;
             List<DtoLibro> lstDtoLibros = new List<DtoLibro>();
             try
             {
                 SqlDataReader reader = cmd.ExecuteReader();
-                int item = 0;
+                int item = 1;
                 while (reader.Read())
                 {
                     DtoLibro dtoLibro = new DtoLibro
                     {
                         idItem = item,
-                        idBook = reader.GetInt32(0),
+                        varCode = reader.GetString(0),
                         varTitle = reader.GetString(1),
                         varStatus = reader.GetString(2),
                         dmeDateReservation = !reader.IsDBNull(3) ? (DateTime?)reader.GetDateTime(3) : null
@@ -127,12 +127,12 @@ namespace WCFServicioLibreria
             return user;
         }
 
-        public int SP_VALIDARRESERVA(int idLibro)
+        public int SP_VALIDARRESERVA(string varCode)
         {
             conectar();
             SqlCommand cmd = new SqlCommand("SP_VALIDARRESERVA", cn);
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.Add("@ID_BOOK", SqlDbType.Int).Value = idLibro;
+            cmd.Parameters.Add("@CODE_BOOK", SqlDbType.VarChar).Value = varCode;
             int verdad = 1; //0 - No hay reserva y 1 - Hay Reserva
             try
             {
@@ -147,6 +147,43 @@ namespace WCFServicioLibreria
                 throw;
             }
             return verdad;
+        }
+
+        public Book SP_BUSCARLIBROXCODE(string code)
+        {
+            if(code == null)
+            {
+                return null;
+            }
+            conectar();
+            SqlCommand cmd = new SqlCommand("SP_BUSCARLIBROXCODE", cn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@CODE_BOOK", SqlDbType.VarChar).Value = code;
+            Book book = new Book();
+            try
+            {
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        book.idBook = reader.GetInt32(0);
+                        book.varTitle = reader.GetString(1);
+                        book.varCode = reader.GetString(2);
+                        book.intStatus = reader.GetInt32(3);
+                        book.dmeDateCreate = reader.GetDateTime(4);
+                        book.dmeDateUpdate = !reader.IsDBNull(5) ? (DateTime?)reader.GetDateTime(5) : null;
+                        book.bolIsReservated = reader.GetBoolean(6);
+                        book.bolIsActive = reader.GetBoolean(7);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            return book;
         }
 
 

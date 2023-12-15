@@ -21,7 +21,7 @@ namespace WCFServicioLibreria
 
         // TODO: agregue aquí sus operaciones de servicio
         [OperationContract]
-        List<DtoLibro> SP_LISTARVISTALIBROS();
+        List<DtoLibro> SP_LISTARVISTALIBROS(string code);
 
         [OperationContract]
         void SP_RESERVARLIBRO(Reservation reservation);
@@ -30,7 +30,10 @@ namespace WCFServicioLibreria
         User SP_VALIDARACCESO(string email, string password);
 
         [OperationContract]
-        int SP_VALIDARRESERVA(int idLibro);
+        int SP_VALIDARRESERVA(string code);
+
+        [OperationContract]
+        Book SP_BUSCARLIBROXCODE(string code);
     }
 
 
@@ -174,9 +177,9 @@ namespace WCFServicioLibreria
             set { _dmeDateCreate = value; }
         }
 
-        private DateTime _dmeDateUpdate;
+        private DateTime? _dmeDateUpdate;
         [DataMember]
-        public DateTime dmeDateUpdate
+        public DateTime? dmeDateUpdate
         {
             get { return _dmeDateUpdate; }
             set { _dmeDateUpdate = value; }
@@ -274,12 +277,12 @@ namespace WCFServicioLibreria
             set { _idItem = value; }
         }
 
-        private int _idBook;
+        private string _varCode;
         [DataMember]
-        public int idBook
+        public string varCode
         {
-            get { return _idBook; }
-            set { _idBook = value; }
+            get { return _varCode; }
+            set { _varCode = value; }
         }
 
         private string _varTitle;
