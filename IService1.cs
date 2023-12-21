@@ -27,7 +27,7 @@ namespace WCFServicioLibreria
         void SP_RESERVARLIBRO(Reservation reservation);
 
         [OperationContract]
-        User SP_VALIDARACCESO(string email, string password);
+        User SP_OBTENERUSUARIOXEMAIL(string email);
 
         [OperationContract]
         int SP_VALIDARRESERVA(string code);

@@ -88,17 +88,16 @@ namespace WCFServicioLibreria
             }
         }
 
-        public User SP_VALIDARACCESO(string email, string password)
+        public User SP_OBTENERUSUARIOXEMAIL(string email)
         {
-            if(email == null || password == null)
+            if(email == null)
             {
                 return null;
             }
             conectar();
-            SqlCommand cmd = new SqlCommand("SP_VALIDARACCESO", cn);
+            SqlCommand cmd = new SqlCommand("SP_OBTENERUSUARIOXEMAIL", cn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add("@EMAIL", SqlDbType.VarChar).Value = email;
-            cmd.Parameters.Add("@PASSWORD", SqlDbType.VarChar).Value = password;
             User user = new User();
             try
             {
