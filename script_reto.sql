@@ -489,6 +489,10 @@ GO
 
 INSERT dbReto1.dbo.users( varFirstName, varLastName, varEmail, varPassword, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 'Enzo', 'Esteban', 'enzoest26@gmail.com', 'enzitoTuRey', 1, '2023-12-13 11:07:47.240', NULL, CONVERT(bit, 'True'))
 INSERT dbReto1.dbo.users( varFirstName, varLastName, varEmail, varPassword, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 'Juan', 'Pedro', 'pedrito15@gmail.com', 'predrito12', 1, '2023-12-13 11:08:08.407', NULL, CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.users( varFirstName, varLastName, varEmail, varPassword, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 'Diego', 'Estrada', 'dieguito123@gmail.com', 'dieguito123', 1, '2023-12-13 11:08:08.407', NULL, CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.users( varFirstName, varLastName, varEmail, varPassword, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 'Fernando', 'Hernandez', 'fernandito123@gmail.com', 'fernandito123', 1, '2023-12-13 11:08:08.407', NULL, CONVERT(bit, 'True'))
+INSERT dbReto1.dbo.users( varFirstName, varLastName, varEmail, varPassword, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 'Gatini', 'Esteban', 'gatini123@gmail.com', 'gatini123', 1, '2023-12-13 11:08:08.407', NULL, CONVERT(bit, 'True'))
+
 GO
 
 
