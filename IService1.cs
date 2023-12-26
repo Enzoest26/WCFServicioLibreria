@@ -30,10 +30,20 @@ namespace WCFServicioLibreria
         User SP_OBTENERUSUARIOXEMAIL(string email);
 
         [OperationContract]
-        int SP_VALIDARRESERVA(string code);
+        int SP_VALIDARRESERVAXLIBRO(string code);
+
+        [OperationContract]
+        int SP_VALIDARRESERVAXUSUARIOXLIBRO(int idUser, string varCode);
 
         [OperationContract]
         Book SP_BUSCARLIBROXCODE(string code);
+
+        [OperationContract]
+        void SP_RESERVARCOLA(int idUser, int idBook);
+        [OperationContract]
+        int SP_VALIDARCOLA(int idUser, int idBook);
+        [OperationContract]
+        List<MensajeNotificacion> SP_LISTARNOTIFICACIONESXUSUARIO(int idUser);
     }
 
 
@@ -266,6 +276,8 @@ namespace WCFServicioLibreria
             get { return _bolIsActive; }
             set { _bolIsActive = value; }
         }
+
+
     }
 
     public class DtoLibro
@@ -306,6 +318,76 @@ namespace WCFServicioLibreria
         {
             get { return _varStatus; }
             set { _varStatus = value; }
+        }
+    }
+
+    public class UserNotification
+    {
+        private int _idNotificacion;
+        [DataMember]
+        public int idNotificacion
+        {
+            get { return _idNotificacion;}
+            set { _idNotificacion = value;}
+        }
+
+        private int _idUser;
+        [DataMember]
+        public int idUser
+        {
+            get { return _idUser; }
+            set { _idUser = value; }
+        }
+
+        private string _varDescription;
+        [DataMember]
+        public string varDescription
+        {
+            get { return _varDescription; }
+            set { _varDescription = value; }
+        }
+
+        private int _intStatus;
+        [DataMember]
+        public int intStatus
+        {
+            get { return _intStatus; }
+            set { _intStatus = value; }
+        }
+
+        private DateTime _dmeDateCreate;
+        [DataMember]
+        public DateTime dmeDateCreate
+        {
+            get { return _dmeDateCreate; }
+            set { _dmeDateCreate = value; }
+        }
+
+        private DateTime? _dmeDateUpdate;
+        [DataMember]
+        public DateTime? dmeDateUpdate
+        {
+            get { return _dmeDateUpdate; }
+            set { _dmeDateUpdate = value; }
+        }
+
+        private Boolean _bolIsActive;
+        [DataMember]
+        public Boolean bolIsActive
+        {
+            get { return _bolIsActive; }
+            set { _bolIsActive = value; }
+        }
+    }
+
+    public class MensajeNotificacion
+    {
+        private string _varDescription;
+        [DataMember]
+        public string varDescription
+        {
+            get { return _varDescription; }
+            set { _varDescription = value; }
         }
     }
 }

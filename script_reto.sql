@@ -204,7 +204,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE or ALTER PROC [dbo].[SP_LISTARVISTALIBROS](@CODE VARCHAR(50))
+CREATE PROC [dbo].[SP_LISTARVISTALIBROS](@CODE VARCHAR(50))
 AS
 BEGIN
 	SELECT
@@ -226,18 +226,34 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create OR ALTER proc [dbo].[SP_RESERVARLIBRO](@ID_USER INT, @ID_BOOK INT)
+create  proc [dbo].[SP_RESERVARLIBRO](@ID_USER INT, @ID_BOOK INT)
 AS
 	begin
-		INSERT INTO dbo.reservations (idUser, idBook, dmeDateReservation, intStatus, dmeDateCreate, bolIsActive) VALUES (@ID_USER, @ID_BOOK, CAST(GETDATE() AS DATE), 1, GETDATE(), 1);
+		INSERT INTO dbo.reservations (idUser, idBook, dmeDateReservation, dmeDateReservationEnd,intStatus, dmeDateCreate, bolIsActive) VALUES (@ID_USER, @ID_BOOK, CAST(GETDATE() AS DATE), DATEADD(DAY, 1, CAST(GETDATE() AS DATE)), 1, GETDATE(), 1);
 		UPDATE dbo.books SET bolIsReservated = 1 WHERE idBook = @ID_BOOK;
+
+		--INSERCION DE NOTIFICACION
+		INSERT INTO dbo.UserNotifications(idUser, varDescription, intStatus, dmeDateCreate, bolIsActive)
+		SELECT 
+		r.idUser, 
+		CONCAT('Hola ', u.varFirstName , ', ya cuenta con la reserva del libro ', b.varTitle, ' desde el ', CONVERT(varchar, r.dmeDateReservation, 103), ' - ', convert(varchar(5), r.dmeDateReservation, 8), ' hasta ', CONVERT(varchar, r.dmeDateReservationEnd, 103), ' - ', convert(varchar(5), r.dmeDateReservationEnd, 8)), 
+		1,
+		GETDATE(),
+		1
+		FROM dbo.reservations AS r
+		INNER JOIN dbo.users AS u
+		ON r.idUser = u.idUser
+		INNER JOIN dbo.books AS b
+		ON r.idBook = b.idBook
+		WHERE r.idUser = @ID_USER AND r.idBook = @ID_BOOK AND r.bolIsActive = 1;
 	end
 GO
+/****** Object:  StoredProcedure [dbo].[SP_RESERVARCOLA]    Script Date: 14/12/2023 17:35:06 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create or alter  proc [dbo].[SP_RESERVARCOLA](@ID_USER INT, @ID_BOOK INT)
+create  proc [dbo].[SP_RESERVARCOLA](@ID_USER INT, @ID_BOOK INT)
 AS
 	begin
 		DECLARE @V_INT_PRIORITY INT;
@@ -264,9 +280,25 @@ AS
 		1,
 		GETDATE(), 
 		1);
+
+		--INSERCION DE NOTIFICACION
+		INSERT INTO dbo.UserNotifications(idUser, varDescription, intStatus, dmeDateCreate, bolIsActive)
+		SELECT 
+		@ID_USER, 
+		CONCAT('Hola ', u.varFirstName, ', su fecha de reserva era el dia ', CONVERT(varchar, w.dmeDateReservation, 103), ' - ', convert(varchar(5), w.dmeDateReservation, 8), ' del Libro: ', b.varTitle, '(', b.varCode, ')'),
+		1,
+		GETDATE(),
+		1
+		FROM dbo.WaitReservations as w 
+		INNER JOIN dbo.users AS u
+		ON w.idUser = u.idUser
+		INNER JOIN dbo.books AS b
+		ON w.idBook = b.idBook
+		WHERE w.idUser = @ID_USER AND w.idBook = @ID_BOOK AND w.varPriority = CONCAT('P', cast(@V_INT_PRIORITY as VARCHAR(1))) AND w.bolIsActive = 1;
+		
 	end
 GO
-/****** Object:  StoredProcedure [dbo].[SP_VALIDARACCESO]    Script Date: 14/12/2023 17:35:06 ******/
+/****** Object:  StoredProcedure [dbo].[SP_OBTENERUSUARIOXEMAIL]    Script Date: 14/12/2023 17:35:06 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -276,7 +308,7 @@ BEGIN
 	SELECT * FROM dbo.users WHERE varEmail = @EMAIL AND bolIsActive = 1;
 END
 GO
-/****** Object:  StoredProcedure [dbo].[SP_VALIDARRESERVA]    Script Date: 14/12/2023 17:35:06 ******/
+/****** Object:  StoredProcedure [dbo].[SP_VALIDARRESERVAXLIBRO]    Script Date: 14/12/2023 17:35:06 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -286,7 +318,7 @@ BEGIN
 	SELECT COUNT(1) FROM dbo.reservations AS r INNER JOIN dbo.books AS b ON r.idBook = b.idBook WHERE b.varCode = @CODE_BOOK;
 END
 GO
-
+/****** Object:  StoredProcedure [dbo].[SP_VALIDARRESERVAXUSUARIOXLIBRO]    Script Date: 14/12/2023 17:35:06 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -296,7 +328,7 @@ BEGIN
 	SELECT COUNT(1) FROM dbo.reservations r INNER JOIN dbo.books AS b ON r.idBook = b.idBook WHERE b.varCode = @CODE_BOOK AND r.idUser = @ID_USER AND r.bolIsActive = 1;
 END
 GO
-/****** Object:  StoredProcedure [dbo].[SP_VALIDARRESERVA]    Script Date: 14/12/2023 17:35:06 ******/
+/****** Object:  StoredProcedure [dbo].[SP_BUSCARLIBROXCODE]    Script Date: 14/12/2023 17:35:06 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -306,12 +338,12 @@ BEGIN
 	SELECT * FROM dbo.books WHERE varCode = @CODE_BOOK;
 END
 GO
-
+/****** Object:  StoredProcedure [dbo].[SP_VALIDARCOLA]    Script Date: 14/12/2023 17:35:06 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create OR ALTER  proc [dbo].[SP_VALIDARCOLA](@ID_USER INT,@ID_BOOK INT) AS
+create  proc [dbo].[SP_VALIDARCOLA](@ID_USER INT,@ID_BOOK INT) AS
 BEGIN
 	DECLARE @V_INT_COLA int = 0;
 	--VALIDAR SI EL USUARIO NO ES EL MISMO
@@ -339,16 +371,98 @@ BEGIN
 	END
 END
 GO
-/****** Object:  StoredProcedure [dbo].[SP_VALIDARRESERVA]    Script Date: 14/12/2023 17:35:06 *****
+/****** Object:  StoredProcedure [dbo].[SP_LISTARNOTIFICACIONESXUSUARIO]    Script Date: 14/12/2023 17:35:06 *****
+*/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create   proc [dbo].[SP_BUSCARNOTIFICACIONES](@ID_USER INT) AS
+create or alter proc [dbo].[SP_LISTARNOTIFICACIONESXUSUARIO](@ID_USER INT) AS
 BEGIN
-	SELECT * FROM dbo.books WHERE varCode = @CODE_BOOK;
+	SELECT varDescription FROM dbo.UserNotifications WHERE idUser = @ID_USER AND bolIsActive = 1;
 END
-GO*/
+GO
+/****** Object:  StoredProcedure [dbo].[SP_LIBERACIONLIBROS]    Script Date: 14/12/2023 17:35:06 *****
+*/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE proc [dbo].[SP_LIBERACIONLIBROS](@FECHA_PRUEBA DATE) AS
+BEGIN
+		--FECHA ACTUAL
+	DECLARE @V_DATE_FECHAACTUAL DATE = GETDATE();
+	DECLARE @V_INT_CONTADOR_COLA INT;
+	DECLARE @V_INT_VALIDAR_COLA INT;
+	--SOLO DE PRUEBA PAR PROBAR POR DIAS
+	SET @V_DATE_FECHAACTUAL = @FECHA_PRUEBA; --24
+
+	SELECT @V_INT_VALIDAR_COLA = COUNT(1) FROM dbo.reservations WHERE CAST(dmeDateReservation AS DATE) = @V_DATE_FECHAACTUAL and bolIsActive = 1;
+
+	IF @V_INT_VALIDAR_COLA = 0
+	BEGIN
+		--DESACTIVANDO TODAS LAS NOTIFICACIONES
+		UPDATE dbo.UserNotifications SET bolIsActive = 0 WHERE bolIsActive = 1;
+
+		-- ESTO PARA VALIDAR LA TABLA SI HAY PARA HACER COLA
+		SELECT @V_INT_CONTADOR_COLA =COUNT(*) FROM dbo.WaitReservations WHERE varPriority = 'P1' AND dmeDateReservation = @V_DATE_FECHAACTUAL AND bolIsActive = 1;
+
+		IF @V_INT_CONTADOR_COLA > 0
+		BEGIN
+			-- SI EXISTE PARA LA FECHA DE HOY, NO HACER NADA
+			-- SI NO EXISTE PARA LA FECHA DE HOY, REALIZAR EL PROCEDIMIENTO
+			--INSERCION A TABLA RESERVAS
+			INSERT INTO dbo.reservations(idBook, idUser, intStatus, dmeDateReservation, dmeDateReservationEnd, dmeDateCreate, bolIsActive)
+			SELECT w.idBook, w.idUser, 1, w.dmeDateReservation, w.dmeDateReservationEnd, GETDATE(), 1
+			FROM dbo.WaitReservations AS w WHERE varPriority = 'P1' AND dmeDateReservation = @V_DATE_FECHAACTUAL AND bolIsActive = 1;
+
+			--ACTUALIZACION A TABLA COLA DE P2 A P1 DATEADD(DAY, 1, @V_DATE_FECHAACTUAL),
+			UPDATE dbo.WaitReservations SET varPriority = 'P1' WHERE varPriority = 'P2'  AND CAST(dmeDateReservation AS DATE) = DATEADD(DAY, 1, @V_DATE_FECHAACTUAL) and bolIsActive = 1; 
+
+			--ACTUALIZACION A TABLA COLA DE P3 A P2
+			UPDATE dbo.WaitReservations SET varPriority = 'P2' WHERE varPriority = 'P3'  AND CAST(dmeDateReservation AS DATE) = DATEADD(DAY, 2, @V_DATE_FECHAACTUAL) and bolIsActive = 1; 
+
+			--ACTUALIZACION A TABLA COLA DE DESACTIVACION
+			UPDATE dbo.WaitReservations SET bolIsActive = 0 WHERE CAST(dmeDateReservation AS DATE) = @V_DATE_FECHAACTUAL and bolIsActive = 1; 
+
+			--ACTUALIZACION A TABLA RESERVATION DE DESACTIVACION
+			UPDATE dbo.reservations SET bolIsActive = 0 WHERE CAST(dmeDateReservationEnd AS DATE) = @V_DATE_FECHAACTUAL and bolIsActive = 1; 
+
+			--INSERCION DE NOTIFICACIONES DEL COLA
+			INSERT INTO dbo.UserNotifications(idUser, varDescription, intStatus, dmeDateCreate, bolIsActive)
+			SELECT
+			w.idUser, 
+			CONCAT('Hola ', u.varFirstName, ', su fecha de reserva era el dia ', CONVERT(varchar, w.dmeDateReservation, 103), ' - ', convert(varchar(5), w.dmeDateReservation, 8), ' del Libro: ', b.varTitle, '(', b.varCode, ')'), 
+			1, 
+			GETDATE(),
+			1 
+			FROM dbo.WaitReservations  as w
+			INNER JOIN dbo.users u
+			ON w.idUser = u.idUser
+			INNER JOIN dbo.books AS b
+			ON w.idBook = b.idBook
+			WHERE w.varPriority IN ('P1', 'P2', 'P3') AND w.bolIsActive = 1;
+
+			INSERT INTO dbo.UserNotifications(idUser, varDescription, intStatus, dmeDateCreate, bolIsActive)
+			SELECT 
+			r.idUser, 
+			CONCAT('Hola ', u.varFirstName , ', ya cuenta con la reserva del libro ', b.varTitle, ' desde el ', CONVERT(varchar, r.dmeDateReservation, 103), ' - ', convert(varchar(5), r.dmeDateReservation, 8), ' hasta ', CONVERT(varchar, r.dmeDateReservationEnd, 103), ' - ', convert(varchar(5), r.dmeDateReservationEnd, 8)), 
+			1, 
+			GETDATE(), 
+			1 
+			FROM dbo.reservations as r
+			INNER JOIN dbo.users u
+			ON r.idUser = u.idUser
+			INNER JOIN dbo.books as b
+			ON r.idBook = b.idBook
+			WHERE r.bolIsActive = 1;
+
+		END
+	END
+END
+GO
+
+
 USE [master]
 GO
 
@@ -377,68 +491,5 @@ INSERT dbReto1.dbo.users( varFirstName, varLastName, varEmail, varPassword, intS
 INSERT dbReto1.dbo.users( varFirstName, varLastName, varEmail, varPassword, intStatus, dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 'Juan', 'Pedro', 'pedrito15@gmail.com', 'predrito12', 1, '2023-12-13 11:08:08.407', NULL, CONVERT(bit, 'True'))
 GO
 
-INSERT dbReto1.dbo.reservations( idUser, idBook, dmeDateReservation, intStatus,dmeDateReservationEnd ,dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 1, 3, '2023-12-24 00:00:00', 1, '2023-12-25 00:00:00', GETDATE(), NULL, CONVERT(bit, 'True'))
-INSERT dbReto1.dbo.reservations( idUser, idBook, dmeDateReservation, intStatus,dmeDateReservationEnd ,dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 1, 1, '2023-12-24 00:00:00', 1, '2023-12-25 00:00:00', GETDATE(),NULL, CONVERT(bit, 'True'))
-INSERT dbReto1.dbo.reservations( idUser, idBook, dmeDateReservation, intStatus, dmeDateReservationEnd,dmeDateCreate, dmeDateUpdate, bolIsActive) VALUES ( 1, 5, '2023-12-24 00:00:00', 1, '2023-12-25 00:00:00', GETDATE(), NULL, CONVERT(bit, 'True'))
-GO
 
-CREATE OR ALTER   proc [dbo].[SP_LIBERACIONLIBROS](@FECHA_PRUEBA DATE) AS
-BEGIN
-		--FECHA ACTUAL
-	DECLARE @V_DATE_FECHAACTUAL DATE = GETDATE();
-	DECLARE @V_INT_CONTADOR_COLA INT;
-	DECLARE @V_INT_VALIDAR_COLA INT;
-	--SOLO DE PRUEBA PAR PROBAR POR DIAS
-	SET @V_DATE_FECHAACTUAL = @FECHA_PRUEBA; --24
-
-	SELECT @V_INT_VALIDAR_COLA = COUNT(1) FROM dbo.reservations WHERE CAST(dmeDateReservation AS DATE) = @V_DATE_FECHAACTUAL and bolIsActive = 1;
-
-	IF @V_INT_VALIDAR_COLA = 0
-	BEGIN
-		-- ESTO PARA VALIDAR LA TABLA SI HAY PARA HACER COLA
-		SELECT @V_INT_CONTADOR_COLA =COUNT(*) FROM dbo.WaitReservations WHERE varPriority = 'P1' AND dmeDateReservation = @V_DATE_FECHAACTUAL AND bolIsActive = 1;
-
-		IF @V_INT_CONTADOR_COLA > 0
-		BEGIN
-			-- SI EXISTE PARA LA FECHA DE HOY, NO HACER NADA
-			-- SI NO EXISTE PARA LA FECHA DE HOY, REALIZAR EL PROCEDIMIENTO
-			--INSERCION A TABLA RESERVAS
-			INSERT INTO dbo.reservations(idBook, idUser, intStatus, dmeDateReservation, dmeDateReservationEnd, dmeDateCreate, bolIsActive)
-			SELECT w.idBook, w.idUser, 1, w.dmeDateReservation, w.dmeDateReservationEnd, GETDATE(), 1
-			FROM dbo.WaitReservations AS w WHERE varPriority = 'P1' AND dmeDateReservation = @V_DATE_FECHAACTUAL AND bolIsActive = 1;
-
-			--ACTUALIZACION A TABLA COLA DE P2 A P1 DATEADD(DAY, 1, @V_DATE_FECHAACTUAL),
-			UPDATE dbo.WaitReservations SET varPriority = 'P1' WHERE varPriority = 'P2'  AND CAST(dmeDateReservation AS DATE) = DATEADD(DAY, 1, @V_DATE_FECHAACTUAL) and bolIsActive = 1; 
-
-			--ACTUALIZACION A TABLA COLA DE P3 A P2
-			UPDATE dbo.WaitReservations SET varPriority = 'P2' WHERE varPriority = 'P3'  AND CAST(dmeDateReservation AS DATE) = DATEADD(DAY, 2, @V_DATE_FECHAACTUAL) and bolIsActive = 1; 
-
-			--ACTUALIZACION A TABLA COLA DE DESACTIVACION
-			UPDATE dbo.WaitReservations SET bolIsActive = 0 WHERE CAST(dmeDateReservation AS DATE) = @V_DATE_FECHAACTUAL and bolIsActive = 1; 
-
-			--ACTUALIZACION A TABLA RESERVATION DE DESACTIVACION
-			UPDATE dbo.reservations SET bolIsActive = 0 WHERE CAST(dmeDateReservationEnd AS DATE) = @V_DATE_FECHAACTUAL and bolIsActive = 1; 
-
-			--DESACTIVANDO TODAS LAS NOTIFICACIONES
-			UPDATE dbo.UserNotifications SET bolIsActive = 0;
-
-			--INSERCION DE NOTIFICACIONES DEL COLA
-			INSERT INTO dbo.UserNotifications(idUser, varDescription, intStatus, dmeDateCreate, bolIsActive)
-			SELECT w.idUser, CONCAT('Hola ', u.varFirstName, ', su fecha de reserva era el dia ', CONVERT(varchar, w.dmeDateReservation, 103), ' - ', convert(varchar(5), w.dmeDateReservation, 8)), 1, GETDATE(), 1 FROM dbo.WaitReservations  as w
-			INNER JOIN dbo.users u
-			ON w.idUser = u.idUser
-			WHERE w.varPriority IN ('P1', 'P2', 'P3') AND w.bolIsActive = 1;
-
-			INSERT INTO dbo.UserNotifications(idUser, varDescription, intStatus, dmeDateCreate, bolIsActive)
-			SELECT r.idUser, CONCAT('Hola ', u.varFirstName , ', ya cuenta con la reserva del libro ', b.varTitle, ' desde el ', CONVERT(varchar, r.dmeDateReservation, 103), ' - ', convert(varchar(5), r.dmeDateReservation, 8), ' hasta ', CONVERT(varchar, r.dmeDateReservationEnd, 103), ' - ', convert(varchar(5), r.dmeDateReservationEnd, 8)), 1, GETDATE(), 1 FROM dbo.reservations as r
-			INNER JOIN dbo.users u
-			ON r.idUser = u.idUser
-			INNER JOIN dbo.books as b
-			ON r.idBook = b.idBook
-			WHERE r.bolIsActive = 1;
-
-		END
-	END
-END
-GO
 

@@ -62,6 +62,7 @@ namespace WCFServicioLibreria
             {
                 throw;
             }
+            finally { cn.Close(); }
             return lstDtoLibros;
         }
 
@@ -71,12 +72,13 @@ namespace WCFServicioLibreria
             SqlCommand cmd = new SqlCommand("SP_RESERVARLIBRO", cn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add("@ID_USER", SqlDbType.Int).Value = reservation.idUser;
-            cmd.Parameters.Add("@ID_BOOK", SqlDbType.VarChar).Value = reservation.idBook;
+            cmd.Parameters.Add("@ID_BOOK", SqlDbType.Int).Value = reservation.idBook;
+            /*
             cmd.Parameters.Add("@DATE_RESERVATION", SqlDbType.DateTime).Value = reservation.dmeDateReservation;
             cmd.Parameters.Add("@DATE_CREATED", SqlDbType.DateTime).Value = reservation.dmeDateCreate;
             cmd.Parameters.Add("@STATUS", SqlDbType.Int).Value = reservation.intStatus;
             cmd.Parameters.Add("@ACTIVE", SqlDbType.Bit).Value = reservation.bolIsActive;
-           
+           */
             try
             {
                cmd.ExecuteNonQuery();
@@ -86,6 +88,27 @@ namespace WCFServicioLibreria
 
                 throw;
             }
+            finally { cn.Close(); }
+        }
+
+        public void SP_RESERVARCOLA(int idUser, int idBook)
+        {
+            conectar();
+            SqlCommand cmd = new SqlCommand("SP_RESERVARCOLA", cn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@ID_USER", SqlDbType.Int).Value = idUser;
+            cmd.Parameters.Add("@ID_BOOK", SqlDbType.Int).Value = idBook;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            finally { cn.Close(); }
         }
 
         public User SP_OBTENERUSUARIOXEMAIL(string email)
@@ -123,13 +146,14 @@ namespace WCFServicioLibreria
 
                 throw;
             }
+            finally { cn.Close(); }
             return user;
         }
 
-        public int SP_VALIDARRESERVA(string varCode)
+        public int SP_VALIDARRESERVAXLIBRO(string varCode)
         {
             conectar();
-            SqlCommand cmd = new SqlCommand("SP_VALIDARRESERVA", cn);
+            SqlCommand cmd = new SqlCommand("SP_VALIDARRESERVAXLIBRO", cn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add("@CODE_BOOK", SqlDbType.VarChar).Value = varCode;
             int verdad = 1; //0 - No hay reserva y 1 - Hay Reserva
@@ -145,6 +169,55 @@ namespace WCFServicioLibreria
             { 
                 throw;
             }
+            finally { cn.Close(); }
+            return verdad;
+        }
+
+        public int SP_VALIDARRESERVAXUSUARIOXLIBRO(int idUser, string varCode)
+        {
+            conectar();
+            SqlCommand cmd = new SqlCommand("SP_VALIDARRESERVAXUSUARIOXLIBRO", cn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@ID_USER", SqlDbType.Int).Value = idUser;
+            cmd.Parameters.Add("@CODE_BOOK", SqlDbType.VarChar).Value = varCode;
+            int verdad = 1; //0 - No hay reserva y 1 - Hay Reserva
+            try
+            {
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    verdad = reader.GetInt32(0);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally { cn.Close(); }
+            return verdad;
+        }
+
+        public int SP_VALIDARCOLA(int idUser, int idBook)
+        {
+            conectar();
+            SqlCommand cmd = new SqlCommand("SP_VALIDARCOLA", cn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@ID_USER", SqlDbType.Int).Value = idUser;
+            cmd.Parameters.Add("@ID_BOOK", SqlDbType.Int).Value = idBook;
+            int verdad = 1; //0 - No hay reserva y 1 - Hay Reserva
+            try
+            {
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    verdad = reader.GetInt32(0);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally { cn.Close(); }
             return verdad;
         }
 
@@ -182,7 +255,37 @@ namespace WCFServicioLibreria
 
                 throw;
             }
+            finally { cn.Close(); }
             return book;
+        }
+
+        public List<MensajeNotificacion> SP_LISTARNOTIFICACIONESXUSUARIO(int idUser)
+        {
+            conectar();
+            SqlCommand cmd = new SqlCommand("SP_LISTARNOTIFICACIONESXUSUARIO", cn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@ID_USER", SqlDbType.Int).Value = idUser;
+            List<MensajeNotificacion> lstMensajeNotification = new List<MensajeNotificacion>();
+            try
+            {
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        MensajeNotificacion mensajeNotificacion = new MensajeNotificacion();
+                        mensajeNotificacion.varDescription = reader.GetString(0);
+                        lstMensajeNotification.Add(mensajeNotificacion);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }finally { cn.Close(); }
+
+            return lstMensajeNotification;
         }
 
 
